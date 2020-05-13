@@ -1,17 +1,31 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Header title="Climate Todo" subtitle="Take the Next Step" />
+    <TodoList title="Remaining Steps" :items="getIncomplete">All steps complete!</TodoList>
+    <TodoList title="Steps Completed" :items="getComplete">No completed steps</TodoList>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import seeds from "./data/todos"
+import Header from './components/Header.vue'
+import TodoList from './components/TodoList.vue'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Header,
+    TodoList
+  },
+  computed: {
+    ...mapGetters(['getComplete', 'getIncomplete'])
+  },
+  methods: {
+    ...mapMutations(['addTodo'])
+  },
+  mounted() {
+    seeds.forEach(seed => this.addTodo(seed))
   }
 }
 </script>
@@ -21,8 +35,10 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>

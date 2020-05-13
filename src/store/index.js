@@ -1,6 +1,11 @@
-const state = () => ({
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+Vue.use(Vuex)
+
+const state = {
   todos: []
-})
+}
 
 const getters = {
   getTodo: (state) => (id) => {
@@ -30,4 +35,4 @@ const mutations = {
   }
 }
 
-export default { state, getters, mutations }
+export default new Vuex.Store({ state, getters, mutations })
