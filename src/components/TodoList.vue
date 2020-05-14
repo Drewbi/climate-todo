@@ -1,20 +1,22 @@
 <template>
-  <div class="todoList">
+  <div id="todoList">
     <h3>{{ title }}</h3>
-    <TodoItem v-for="item in items" :key="item.id" :todo="item" />
-    <p v-show="items.length === 0">{{ emptyText }}</p>
+    <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo" />
+    <p v-show="todos.length === 0">{{ emptyText }}</p>
     <slot />
   </div>
 </template>
 
 <script>
 import TodoItem from "./TodoItem"
+
 export default {
   components: {
     TodoItem
   },
+
   props: {
-    items: {
+    todos: {
       type: Array
     },
     title: {
@@ -28,17 +30,18 @@ export default {
 </script>
 
 <style scoped>
-  .todoList {
+  #todoList {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 95%;
+    width: 500px;
     margin: 10px;
     border-radius: 5px;
   }
-  @media screen and (min-width: 500px) {
-    .todoList {
-      width: 500px;
+
+  @media screen and (max-width: 500px) {
+    #todoList {
+         width: 95%;
     }
   }
 </style>

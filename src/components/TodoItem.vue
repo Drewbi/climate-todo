@@ -1,7 +1,10 @@
 <template>
-  <div class="todoItem" @click="toggleTodo(todo.id)">
+  <div class="todoItem" @mouseover="isHovered = true" @mouseout="isHovered = false">
     <p>{{ todo.text }}</p>
-    <input type="checkbox" name="completed" :checked="todo.complete">
+    <i v-if="todo.complete" id="complete-icon" class="material-icons" @click="toggleTodo(todo.id)">check_circle_outline</i>
+    <i v-else id="incomplete-icon" class="material-icons" @click="toggleTodo(todo.id)">radio_button_unchecked</i>
+    <i v-show="isSmallScreen || isHovered" id="edit-icon" class="material-icons" @click="setSelectedTodo(todo.id)">edit</i>
+    <i v-show="isSmallScreen || isHovered" id="delete-icon" class="material-icons" @click="removeTodo(todo.id)">delete</i>
   </div>
 </template>
 
@@ -33,11 +36,41 @@ export default {
       }
     }
   },
+
+  data: () => ({
+    isHovered: false,
+    window: {
+      width: 0,
+      height: 0
+    }
+  }),
+
+  created() {
+      window.addEventListener('resize', this.handleResize);
+      this.handleResize();
+  },
+
+  destroyed() {
+      window.removeEventListener('resize', this.handleResize);
+  },
+
+  computed: {
+    isSmallScreen(){
+      return this.window.width < 800 || this.window.height < 800
+    }
+  },
+
   methods: {
     ...mapMutations([
-      'toggleTodo'
-    ])
-  }
+      'toggleTodo',
+      'removeTodo',
+      'setSelectedTodo'
+    ]),
+    handleResize() {
+      this.window.width = window.innerWidth;
+      this.window.height = window.innerHeight;
+    }
+  },
 }
 </script>
 
@@ -51,15 +84,40 @@ export default {
     text-align: left;
     transition: background-color 0.1s;
   }
+
   .todoItem:hover {
     background-color: #fcfcfc;
   }
+
   p {
     display: inline-block;
     margin: 0;
-    max-width: 80%;
+    max-width: 75%;
+    cursor: default;
   }
+
   input {
     float: right;
   }
+
+  .material-icons {
+    color: #9ea7b0;
+    float: right;
+    margin: 0 3px;
+    transition: color 0.3s;
+  }
+
+  .material-icons:hover {
+    cursor: pointer;
+    color: #828588;
+  }
+
+  #complete-icon {
+    color: #78bf9a;
+  }
+  
+  #incomplete-icon:hover {
+    color: #78bf9a;
+  }
+
 </style>

@@ -11,36 +11,73 @@ const findUniqueId = () => {
 } 
 
 const state = {
-  todos: []
+  todos: [],
+  editModal: false,
+  selectedTodo: null
 }
 
 const getters = {
-  getTodo: (state) => (id) => {
-    return state.todos.find(todo => todo.id === id)
+  getSelected: state => {
+    return state.selectedTodo
   },
-  getIncomplete: (state) => {
+  isNewTodo: state => {
+    return !state.selectedTodo || !state.todos.some(todo => todo.id === state.selectedTodo.id)
+  },
+  getIncomplete: state => {
     return state.todos.filter(todo => !todo.complete)
   },
-  getComplete: (state) => {
+  getComplete: state => {
     return state.todos.filter(todo => todo.complete)
+  },
+  modalOpen: state => {
+    return state.editModal
   }
 }
 
 const mutations = {
-  addTodo(state, todo) {
+  newTodo (state) {
     const id = findUniqueId()
-    todo.id = id
-    state.todos.push(todo)
+    const todo = {
+      id,
+      text: '',
+      urgency: 1,
+      difficulty: 1,
+      complete: false
+    }
+    state.selectedTodo = todo
+    state.editModal = true
   },
-  removeTodo(state, id) {
+  saveNewTodo (state, todo) {
+    state.todos.push(todo)
+    state.selectedTodo = null
+    state.editModal = false
+  },
+  updateTodo (state, update) {
+    const { todos } = state
+    const targetTodo = todos.find(todo => todo.id === update.id)
+    Object.assign(targetTodo, update)
+    state.selectedTodo = null
+    state.editModal = false
+  },
+  removeTodo (state, id) {
     const { todos } = state
     const index = todos.findIndex(todo => todo.id === id)
     if (index >= 0) todos.splice(index, 1)
   },
-  toggleTodo(state, id) {
+  toggleTodo (state, id) {
     const { todos } = state
     const todo = todos.find(todo => todo.id === id)
     if(todo) todo.complete = !todo.complete
+  },
+  closeModal (state) {
+    state.editModal = false
+    state.selectedTodo = null
+  },
+  setSelectedTodo (state, id) {
+    const { todos } = state
+    const todo = todos.find(todo => todo.id === id)
+    state.selectedTodo = todo
+    state.editModal = true
   }
 }
 

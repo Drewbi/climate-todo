@@ -24,13 +24,15 @@ export default {
   #header {
     background-color: #e2fff5;
     width: 100%;
-  }
-  #title {
-    margin: 20px 0 0 0;
-  }
-  #subtitle {
-    font-weight: 400;
-    margin: 0 0 10px 0;
+    padding: 20px 0;
   }
 
+  #title {
+    margin: 0;
+  }
+
+  #subtitle {
+    font-weight: 400;
+    margin: 0;
+  }
 </style>
