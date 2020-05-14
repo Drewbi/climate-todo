@@ -3,6 +3,13 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+const findUniqueId = () => {
+  const range = [...Array(state.todos.length + 1).keys()]
+  return range.filter(number => {
+    return !state.todos.some(todo => todo.id === number)
+  })[0]
+} 
+
 const state = {
   todos: []
 }
@@ -21,6 +28,8 @@ const getters = {
 
 const mutations = {
   addTodo(state, todo) {
+    const id = findUniqueId()
+    todo.id = id
     state.todos.push(todo)
   },
   removeTodo(state, id) {
@@ -31,7 +40,7 @@ const mutations = {
   toggleTodo(state, id) {
     const { todos } = state
     const todo = todos.find(todo => todo.id === id)
-    if(todo) todo.complete = true
+    if(todo) todo.complete = !todo.complete
   }
 }
 

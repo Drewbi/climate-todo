@@ -2,7 +2,8 @@
   <div class="todoList">
     <h3>{{ title }}</h3>
     <TodoItem v-for="item in items" :key="item.id" :todo="item" />
-    <p v-show="items.length === 0"><slot/></p>
+    <p v-show="items.length === 0">{{ emptyText }}</p>
+    <slot />
   </div>
 </template>
 
@@ -18,6 +19,9 @@ export default {
     },
     title: {
       type: String
+    },
+    emptyText: {
+      type: String
     }
   }
 }
@@ -25,8 +29,16 @@ export default {
 
 <style scoped>
   .todoList {
-    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 95%;
     margin: 10px;
     border-radius: 5px;
+  }
+  @media screen and (min-width: 500px) {
+    .todoList {
+      width: 500px;
+    }
   }
 </style>
