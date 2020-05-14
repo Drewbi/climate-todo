@@ -23,7 +23,6 @@ export default {
 <style scoped>
   #header {
     background-color: #e2fff5;
-    padding: 5px;
     width: 100%;
   }
   #title {
