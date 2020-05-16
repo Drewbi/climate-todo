@@ -3,69 +3,67 @@
     <div id="form">
       <h3>Add Step</h3>
       <i id="close-icon" class="material-icons" @click="closeModal">close</i>
-      <input class="textInput" type="text" name="text" placeholder="Step Description" v-model="text">
+      <input class="textInput" type="text" name="text" placeholder="Step Description" v-model="todo.text">
       <div class="todoSlider">
         <label for="urgency">Urgency</label>
-        <input type="range" min="1" max="100" value="50" class="slider" name="urgency" v-model="urgency">
+        <input type="range" min="1" max="100" value="50" class="slider" name="urgency" v-model="todo.urgency">
       </div>
       <div class="todoSlider">
         <label for="difficulty">Difficulty</label>
-        <input type="range" min="1" max="100" value="50" class="slider" name="difficulty" v-model="difficulty">
+        <input type="range" min="1" max="100" value="50" class="slider" name="difficulty" v-model="todo.difficulty">
       </div>
-      <div id="submit" @click="submitTodo">Save</div>
+      <div id="submit" @click="submitTodo">{{ loading ? 'Adding' : 'Save' }}</div>
     </div>
     <div id="modalBackground" @click="closeModal" />
   </div>
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapActions, mapMutations, mapGetters } from 'vuex'
 
 export default {
   data: () => ({
-    id: null,
-    text: '',
-    urgency: 1,
-    difficulty: 1,
-    complete: false
+    todo: {
+      id: null,
+      text: '',
+      urgency: 1,
+      difficulty: 1,
+      complete: false
+    },
+    loading: false
   }),
 
   computed: {
     ...mapGetters([
       'isNewTodo',
       'getSelected'
-      ])
+    ])
   },
 
   methods: {
     ...mapMutations([
       'saveNewTodo',
-      'updateTodo',
       'closeModal'
       ]),
-    submitTodo(){
-      const data = { 
-          id: this.id,
-          text: this.text,
-          urgency: this.urgency,
-          difficulty: this.difficulty,
-          complete: this.complete
+    ...mapActions([
+      'addTodoDB',
+      'updateTodoDB'
+    ]),
+    async submitTodo(){
+      if (!this.loading) {
+        this.loading = true
+        if(this.isNewTodo) {
+          await this.addTodoDB(this.todo)
+        }
+        else await this.updateTodoDB(this.todo)
+        this.loading = false
       }
-      if(this.isNewTodo) {
-        this.saveNewTodo(data)
-      }
-      else this.updateTodo(data)
     }
   },
   
   mounted(){
-    if(this.getSelected) {
-      const { id, text, urgency, difficulty, complete } = this.getSelected
-      this.id = id
-      this.text = text
-      this.urgency = urgency
-      this.difficulty = difficulty
-      this.complete = complete
+    if(!this.isNewTodo) {
+      this.todo = { ...this.getSelected }
     }
   }
 }

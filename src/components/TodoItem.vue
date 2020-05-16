@@ -1,15 +1,18 @@
 <template>
   <div class="todoItem" @mouseover="isHovered = true" @mouseout="isHovered = false">
     <p>{{ todo.text }}</p>
-    <i v-if="todo.complete" id="complete-icon" class="material-icons" @click="toggleTodo(todo.id)">check_circle_outline</i>
-    <i v-else id="incomplete-icon" class="material-icons" @click="toggleTodo(todo.id)">radio_button_unchecked</i>
+    <i :id="todo.complete ? 'complete-icon' : 'incomplete-icon'"
+      class="material-icons"
+      @click="toggleTodoDB(todo)">
+      {{ todo.complete ? 'check_circle_outline' : 'radio_button_unchecked' }}
+    </i>
     <i v-show="isSmallScreen || isHovered" id="edit-icon" class="material-icons" @click="setSelectedTodo(todo.id)">edit</i>
-    <i v-show="isSmallScreen || isHovered" id="delete-icon" class="material-icons" @click="removeTodo(todo.id)">delete</i>
+    <i v-show="isSmallScreen || isHovered" id="delete-icon" class="material-icons" @click="removeTodoDB(todo)">delete</i>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 
 export default {
   props: {
@@ -62,9 +65,12 @@ export default {
 
   methods: {
     ...mapMutations([
-      'toggleTodo',
       'removeTodo',
       'setSelectedTodo'
+    ]),
+    ...mapActions([
+      'removeTodoDB',
+      'toggleTodoDB'
     ]),
     handleResize() {
       this.window.width = window.innerWidth;
