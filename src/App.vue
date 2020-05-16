@@ -2,7 +2,7 @@
   <div id="app">
     <Header title="Climate Todo" subtitle="Take the Next Step" />
     <TodoList title="Remaining Steps" :todos="sortIncomplete" emptyText="All steps complete!">
-      <div id="addButton" @click="newTodo">Add Step</div>
+      <div id="addButton" @click="openModal">Add Step</div>
     </TodoList>
     <EditTodo v-if="modalOpen"/>
     <TodoList title="Steps Completed" :todos="getComplete" emptyText="No completed steps" />
@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import seeds from "./data/todos"
 import Header from './components/Header.vue'
 import TodoList from './components/TodoList.vue'
 import EditTodo from './components/EditTodo.vue'
@@ -23,8 +22,24 @@ export default {
     EditTodo
   },
 
-  mounted() {
-    seeds.forEach(seed => this.saveNewTodo(seed))
+  created() {
+    this.$store.state.db.collection('todos')
+    .onSnapshot((snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const changeObject = { id: change.doc.id, ...change.doc.data() }
+        switch(change.type) {
+          case "added":
+            this.saveNewTodo(changeObject)
+            break
+          case "modified":
+            this.updateTodo(changeObject)
+            break
+          case "removed":
+            this.removeTodo(changeObject.id)
+            break
+        }
+      });
+    });
   },
 
   computed: {
@@ -46,8 +61,10 @@ export default {
   methods: {
     ...mapMutations([
       'closeModal',
-      'newTodo',
-      'saveNewTodo'
+      'openModal',
+      'saveNewTodo',
+      'updateTodo',
+      'removeTodo'
     ])
   }
 }

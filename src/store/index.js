@@ -1,16 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import firestore from '../config/firebaseConfig'
 Vue.use(Vuex)
 
-const findUniqueId = () => {
-  const range = [...Array(state.todos.length + 1).keys()]
-  return range.filter(number => {
-    return !state.todos.some(todo => todo.id === number)
-  })[0]
-} 
-
 const state = {
+  db: firestore,
   todos: [],
   editModal: false,
   selectedTodo: null
@@ -21,7 +15,7 @@ const getters = {
     return state.selectedTodo
   },
   isNewTodo: state => {
-    return !state.selectedTodo || !state.todos.some(todo => todo.id === state.selectedTodo.id)
+    return !state.selectedTodo
   },
   getIncomplete: state => {
     return state.todos.filter(todo => !todo.complete)
@@ -35,18 +29,6 @@ const getters = {
 }
 
 const mutations = {
-  newTodo (state) {
-    const id = findUniqueId()
-    const todo = {
-      id,
-      text: '',
-      urgency: 1,
-      difficulty: 1,
-      complete: false
-    }
-    state.selectedTodo = todo
-    state.editModal = true
-  },
   saveNewTodo (state, todo) {
     state.todos.push(todo)
     state.selectedTodo = null
@@ -69,6 +51,9 @@ const mutations = {
     const todo = todos.find(todo => todo.id === id)
     if(todo) todo.complete = !todo.complete
   },
+  openModal (state) {
+    state.editModal = true
+  },
   closeModal (state) {
     state.editModal = false
     state.selectedTodo = null
@@ -81,4 +66,23 @@ const mutations = {
   }
 }
 
-export default new Vuex.Store({ state, getters, mutations })
+const actions = {
+  async addTodoDB({ state }, newTodo) {
+    delete newTodo.id
+    await state.db.collection('todos').add(newTodo)
+  },
+  async toggleTodoDB({ dispatch }, toggleTodo) {
+    toggleTodo.complete = !toggleTodo.complete
+    await dispatch('updateTodoDB', toggleTodo)
+  },
+  async updateTodoDB({ state }, updateTodo) {
+    const { id, ...formattedTodo } = updateTodo
+    await state.db.collection('todos').doc(id).update(formattedTodo)
+  },
+  async removeTodoDB({ state }, deleteTodo) {
+    const { id } = deleteTodo
+    await state.db.collection('todos').doc(id).delete()
+  },
+}
+
+export default new Vuex.Store({ state, getters, mutations, actions })
