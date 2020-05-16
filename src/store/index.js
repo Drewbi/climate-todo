@@ -32,14 +32,12 @@ const mutations = {
   saveNewTodo (state, todo) {
     state.todos.push(todo)
     state.selectedTodo = null
-    state.editModal = false
   },
   updateTodo (state, update) {
     const { todos } = state
     const targetTodo = todos.find(todo => todo.id === update.id)
     Object.assign(targetTodo, update)
     state.selectedTodo = null
-    state.editModal = false
   },
   removeTodo (state, id) {
     const { todos } = state

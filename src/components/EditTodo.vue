@@ -12,7 +12,7 @@
         <label for="difficulty">Difficulty</label>
         <input type="range" min="1" max="100" value="50" class="slider" name="difficulty" v-model="todo.difficulty">
       </div>
-      <div id="submit" @click="submitTodo">{{ loading ? 'Adding' : 'Save' }}</div>
+      <div id="submit" @click="submitTodo">{{ loading ? loadingText : 'Save' }}</div>
     </div>
     <div id="modalBackground" @click="closeModal" />
   </div>
@@ -30,7 +30,8 @@ export default {
       difficulty: 1,
       complete: false
     },
-    loading: false
+    loading: false,
+    loadingText: ''
   }),
 
   computed: {
@@ -51,12 +52,19 @@ export default {
     ]),
     async submitTodo(){
       if (!this.loading) {
-        this.loading = true
         if(this.isNewTodo) {
+          this.loadingText = 'Adding'
+          this.loading = true
           await this.addTodoDB(this.todo)
         }
-        else await this.updateTodoDB(this.todo)
+        else { 
+          this.loadingText = 'Updating'
+          this.loading = true
+          await this.updateTodoDB(this.todo)
+        }
         this.loading = false
+        this.loadingText = ''
+        this.closeModal()
       }
     }
   },

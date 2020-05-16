@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <Header title="Climate Todo" subtitle="Take the Next Step" />
-    <TodoList title="Remaining Steps" :todos="sortIncomplete" emptyText="All steps complete!">
+    <TodoList title="Remaining Steps" :todos="sortList(getIncomplete)" emptyText="All steps complete!">
       <div id="addButton" @click="openModal">Add Step</div>
     </TodoList>
     <EditTodo v-if="modalOpen"/>
-    <TodoList title="Steps Completed" :todos="getComplete" emptyText="No completed steps" />
+    <TodoList title="Steps Completed" :todos="sortList(getComplete)" emptyText="No completed steps" />
   </div>
 </template>
 
@@ -47,15 +47,7 @@ export default {
       'getComplete',
       'getIncomplete',
       'modalOpen'
-      ]),
-    sortIncomplete(){
-      const sortingArray = [...this.getIncomplete] // Clone to sort in place
-      return sortingArray.sort((todo1, todo2) => {
-        const score1 = todo1.urgency / todo1.difficulty
-        const score2 = todo2.urgency / todo2.difficulty
-        return score2 - score1 // Highest scores will come first
-      })
-    }
+      ])
   },
 
   methods: {
@@ -65,7 +57,15 @@ export default {
       'saveNewTodo',
       'updateTodo',
       'removeTodo'
-    ])
+    ]),
+    sortList(todoList){
+      const sortingArray = [...todoList] // Clone to sort in place
+      return sortingArray.sort((todo1, todo2) => {
+        const score1 = todo1.urgency / todo1.difficulty
+        const score2 = todo2.urgency / todo2.difficulty
+        return score2 - score1 // Highest scores will come first
+      })
+    }
   }
 }
 </script>
